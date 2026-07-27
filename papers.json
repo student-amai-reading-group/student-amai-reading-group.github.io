@@ -80,6 +80,13 @@
     "url": "https://arxiv.org/abs/2603.08371v1"
   },
   {
+    "date": "2026-03-22",
+    "presenter": "MingXu",
+    "title": "The Sharpness Disparity Principle in Transformers for Accelerating Language Model Pre-Training",
+    "authors": "Wang et al., 2025",
+    "url": "https://arxiv.org/abs/2502.19002"
+  },
+  {
     "date": "2026-03-15",
     "presenter": "MingXu",
     "title": "The emergence of sparse attention: impact of data distribution and benefits of repetition",
