@@ -4,7 +4,6 @@
     "presenter": "Tobi",
     "title": "On the Direction of RLVR Updates for LLM Reasoning",
     "url": "https://arxiv.org/abs/2603.22117",
-    "summary": "https://qwen-pilot.notion.site/rlvr-direction",
     "upcoming": true
   },
   {
@@ -17,7 +16,7 @@
   {
     "date": "2026-07-13",
     "presenter": "Tobi",
-    "title": "Predicting RLVR dynamics (ongoing research)",
+    "title": "GRPO/Dr.GRPO/DAPO & Predicting RLVR dynamics (ongoing research)",
     "references": [
       {
         "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
