@@ -74,6 +74,13 @@
   },
   {
     "date": "2026-03-15",
+    "presenter": "Felix",
+    "title": "Leaderboard Incentives: Model Rankings under Strategic Post-Training",
+    "authors": "Chen et al., 2026",
+    "url": "https://arxiv.org/abs/2603.08371v1"
+  },
+  {
+    "date": "2026-03-15",
     "presenter": "MingXu",
     "title": "The emergence of sparse attention: impact of data distribution and benefits of repetition",
     "authors": "Zucchet et al., 2025",
