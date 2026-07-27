@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Applied Math &amp; AI Reading Group</title>
+<style>
+  body { max-width: 72em; margin: 2em auto; padding: 0 1em; font-family: sans-serif; font-size: 15px; line-height: 1.45; }
+  h1 { font-size: 1.4em; margin-bottom: 0.2em; }
+  h2 { font-size: 1.1em; margin-top: 1.6em; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; vertical-align: top; padding: 0.3em 1em 0.3em 0; }
+  th { border-bottom: 1px solid #ccc; font-weight: normal; }
+  td.date, td.presenter { white-space: nowrap; }
+  .refs { font-size: 0.9em; color: #555; }
+</style>
+</head>
+<body>
+
+<h1>Student Applied Math &amp; AI Reading Group</h1>
+
+<p>A reading group run by students interested in research, covering theoretical and
+empirical papers in applied mathematics and AI. We usually meet on Sunday or Monday
+evening, and afterwards we sometimes play social deduction or card games.</p>
+
+<h2 id="next-heading">Next</h2>
+<table>
+  <thead><tr><th>Date</th><th>Presenter</th><th>Paper</th></tr></thead>
+  <tbody id="next"></tbody>
+</table>
+
+<h2>Papers presented</h2>
+<table>
+  <thead><tr><th>Date</th><th>Presenter</th><th>Paper</th></tr></thead>
+  <tbody id="presented"></tbody>
+</table>
+
+<noscript><p>This page needs JavaScript to list the papers. The raw list is in
+<a href="papers.json">papers.json</a>.</p></noscript>
+
+<h2>Join us</h2>
+
+<p><a href="https://discord.gg/REPLACE-ME">Discord</a></p>
+
+<script>
+// Papers live in papers.json - edit that file to add an entry, nothing here.
+function link(url, text) {
+  var a = document.createElement("a");
+  a.href = url;
+  a.textContent = text;
+  return a;
+}
+
+function render(papers, tbodyId) {
+  var tbody = document.getElementById(tbodyId);
+  papers.forEach(function (p) {
+    var tr = tbody.insertRow();
+    var dateCell = tr.insertCell();
+    dateCell.className = "date";
+    dateCell.textContent = p.date;
+    var presenterCell = tr.insertCell();
+    presenterCell.className = "presenter";
+    presenterCell.textContent = p.presenter;
+    var td = tr.insertCell();
+    td.appendChild(p.url ? link(p.url, p.title) : document.createTextNode(p.title));
+    if (p.authors) td.appendChild(document.createTextNode(" — " + p.authors));
+    if (p.summary) {
+      td.appendChild(document.createTextNode(" ("));
+      td.appendChild(link(p.summary, "summary"));
+      td.appendChild(document.createTextNode(")"));
+    }
+    if (p.references) {
+      var refs = document.createElement("div");
+      refs.className = "refs";
+      refs.appendChild(document.createTextNode("references: "));
+      p.references.forEach(function (r, i) {
+        if (i) refs.appendChild(document.createTextNode("; "));
+        refs.appendChild(r.url ? link(r.url, r.title) : document.createTextNode(r.title));
+        if (r.note) refs.appendChild(document.createTextNode(" (" + r.note + ")"));
+      });
+      td.appendChild(refs);
+    }
+  });
+  return papers.length;
+}
+
+fetch("papers.json")
+  .then(function (r) { return r.json(); })
+  .then(function (papers) {
+    papers.sort(function (a, b) { return b.date.localeCompare(a.date); });
+    render(papers.filter(function (p) { return !p.upcoming; }), "presented");
+    if (render(papers.filter(function (p) { return p.upcoming; }), "next") === 0) {
+      document.getElementById("next-heading").style.display = "none";
+      document.getElementById("next").parentNode.style.display = "none";
+    }
+  });
+</script>
+
+</body>
+</html>

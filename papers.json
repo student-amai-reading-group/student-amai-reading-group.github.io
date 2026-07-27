@@ -1,0 +1,89 @@
+[
+  {
+    "date": "2026-07-27",
+    "presenter": "Tobi",
+    "title": "On the Direction of RLVR Updates for LLM Reasoning",
+    "url": "https://arxiv.org/abs/2603.22117",
+    "summary": "https://qwen-pilot.notion.site/rlvr-direction",
+    "upcoming": true
+  },
+  {
+    "date": "2026-07-20",
+    "presenter": "Yannick",
+    "title": "Hidden-Role Games: Equilibrium Concepts and Computation",
+    "authors": "Carminati et al., 2023",
+    "url": "https://arxiv.org/abs/2308.16017v2"
+  },
+  {
+    "date": "2026-07-13",
+    "presenter": "Tobi",
+    "title": "Predicting RLVR dynamics (ongoing research)",
+    "references": [
+      {
+        "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+        "authors": "Shao et al., 2024",
+        "url": "https://arxiv.org/abs/2402.03300",
+        "note": "GRPO"
+      },
+      {
+        "title": "Understanding R1-Zero-Like Training: A Critical Perspective",
+        "authors": "Liu et al., 2025",
+        "url": "https://arxiv.org/abs/2503.20783",
+        "note": "Dr. GRPO"
+      }
+    ]
+  },
+  {
+    "date": "2026-06-28",
+    "presenter": "Felix",
+    "title": "Instance-Dependent Bandit Convex Optimization in One Dimension (thesis)"
+  },
+  {
+    "date": "2026-06-14",
+    "presenter": "Tobi",
+    "title": "Reinforcement Learning with Verifiable Rewards Implicitly Incentivizes Correct Reasoning in Base LLMs",
+    "authors": "Wen et al., 2025",
+    "url": "https://arxiv.org/abs/2506.14245"
+  },
+  {
+    "date": "2026-05-31",
+    "presenter": "Bennet",
+    "title": "B-cos Alignment for Inherently Interpretable CNNs and Vision Transformers",
+    "authors": "Böhle et al., 2023",
+    "url": "https://arxiv.org/abs/2306.10898"
+  },
+  {
+    "date": "2026-05-24",
+    "presenter": "Tobi",
+    "title": "Nesterov Acceleration under a Local Polyak–Łojasiewicz Condition",
+    "url": "https://tobotis.github.io/PL-Accelerated-Nesterov/"
+  },
+  {
+    "date": "2026-05-24",
+    "presenter": "Tobi",
+    "title": "Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?",
+    "authors": "Yue et al., 2025",
+    "url": "https://arxiv.org/abs/2504.13837"
+  },
+  {
+    "date": "2026-03-29",
+    "presenter": "Philipp",
+    "title": "Subliminal Learning: Language models transmit behavioral traits via hidden signals in data",
+    "authors": "Cloud et al., 2025",
+    "url": "https://arxiv.org/abs/2507.14805"
+  },
+  {
+    "date": "2026-03-15",
+    "presenter": "MingXu",
+    "title": "The emergence of sparse attention: impact of data distribution and benefits of repetition",
+    "authors": "Zucchet et al., 2025",
+    "url": "https://arxiv.org/abs/2505.17863"
+  },
+  {
+    "date": "2026-03-08",
+    "presenter": "Tobi",
+    "title": "What is the objective of reasoning with reinforcement learning?",
+    "authors": "Davis & Recht, 2025",
+    "url": "https://arxiv.org/abs/2510.13651"
+  }
+]
