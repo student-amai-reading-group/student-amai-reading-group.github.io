@@ -1,6 +1,6 @@
-# SAMAI website
 
-Single-page site for SAMAI, the Student Applied Math & AI Reading Group.
+
+Single-page site for Student Applied Math & AI Reading Group.
 Everything lives in `index.html` — there is no build step, no dependencies, no framework.
 
 ## Adding a paper
