@@ -84,12 +84,23 @@ function render(papers, tbodyId) {
   return papers.length;
 }
 
+// Local date as YYYY-MM-DD, so it compares directly against the ISO dates in
+// papers.json. Not toISOString(), which would give the UTC day and roll over
+// too early in the evening here.
+function today() {
+  var d = new Date(), m = d.getMonth() + 1, day = d.getDate();
+  return d.getFullYear() + "-" + (m < 10 ? "0" : "") + m + "-" + (day < 10 ? "0" : "") + day;
+}
+
 fetch("papers.json")
   .then(function (r) { return r.json(); })
   .then(function (papers) {
+    // An entry stays under "Next" through the whole day it is held on, and moves
+    // itself to "Papers presented" the next day.
+    var now = today();
     papers.sort(function (a, b) { return b.date.localeCompare(a.date); });
-    render(papers.filter(function (p) { return !p.upcoming; }), "presented");
-    if (render(papers.filter(function (p) { return p.upcoming; }), "next") === 0) {
+    render(papers.filter(function (p) { return p.date < now; }), "presented");
+    if (render(papers.filter(function (p) { return p.date >= now; }), "next") === 0) {
       document.getElementById("next-heading").style.display = "none";
       document.getElementById("next").parentNode.style.display = "none";
     }
