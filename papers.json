@@ -1,5 +1,13 @@
 [
   {
+    "date": "2026-08-23",
+    "presenter": "Felix",
+    "title": "Sample Complexity for Quadratic Bandits: Hessian Dependent Bounds and Optimal Algorithms",
+    "authors": "Yu et al., 2023",
+    "url": "https://arxiv.org/abs/2306.12383",
+    "upcoming": true
+  },
+  {
     "date": "2026-07-27",
     "presenter": "Tobi",
     "title": "On the Direction of RLVR Updates for LLM Reasoning: Identification and Exploitation",
