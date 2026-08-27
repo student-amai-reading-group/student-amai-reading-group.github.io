@@ -13,12 +13,18 @@
   th { border-bottom: 1px solid #ccc; font-weight: normal; }
   td.date, td.presenter { white-space: nowrap; }
   .refs { font-size: 0.9em; color: #555; }
-  details { margin-top: 1.6em; }
-  summary { cursor: pointer; font-size: 1.1em; }
-  .note { font-size: 0.9em; color: #555; max-width: 46em; }
-  #graph { width: 100%; height: auto; }
-  #graph text { font-size: 11px; fill: #222; paint-order: stroke;
-                stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+  #graph-box { margin-top: 1.6em; }
+  #graph { width: 100%; height: auto; touch-action: none; }
+  #graph a { cursor: grab; }
+  #graph a:active { cursor: grabbing; }
+  #graph .dim { opacity: 0.15; }
+  .legend { font-size: 0.85em; color: #555; display: flex; flex-wrap: wrap;
+            gap: 0.3em 1.8em; align-items: center; margin-top: 0.2em; }
+  .legend span { display: inline-flex; align-items: center; gap: 0.45em; }
+  #graph text { font-size: 11px; fill: #222; paint-order: stroke; opacity: 0;
+                stroke: #fff; stroke-width: 3px; stroke-linejoin: round;
+                pointer-events: none; transition: opacity 0.1s; }
+  #graph a.on text { opacity: 1; }
   #graph a { text-decoration: none; }
   #graph a:hover text { text-decoration: underline; }
 </style>
@@ -43,14 +49,22 @@ we sometimes play social deduction or card games.</p>
   <tbody id="presented"></tbody>
 </table>
 
-<details id="graph-box" hidden open>
-<summary>How the papers connect</summary>
-<p class="note">Solid arrows are direct citations, pointing from a paper to the work it cites.
-Dashed lines join papers that lean on the same references without citing each other. Hollow
-circles were referenced in a session rather than presented. Entries with no arXiv link — a
-thesis, a write-up — are left out.</p>
+<div id="graph-box" hidden>
 <svg id="graph" viewBox="0 0 900 540" role="img" aria-label="Graph of how the papers cite each other"></svg>
-</details>
+<p class="legend">
+  <span><svg width="40" height="9" aria-hidden="true"><line x1="0" y1="4.5" x2="30" y2="4.5" stroke="#aaa" stroke-width="1.2"/><path d="M30 1.5 L38 4.5 L30 7.5 z" fill="#aaa"/></svg>
+    A&nbsp;&rarr;&nbsp;B: A cites B</span>
+  <span><svg width="40" height="9" aria-hidden="true"><line x1="0" y1="4.5" x2="38" y2="4.5" stroke="#c4c4c4" stroke-width="1" stroke-dasharray="3,3"/></svg>
+    neither cites the other, but they share at least two references</span>
+  <span><svg width="16" height="13" aria-hidden="true"><circle cx="8" cy="7" r="6" fill="#333"/></svg>
+    presented</span>
+  <span><svg width="16" height="13" aria-hidden="true"><circle cx="8" cy="7" r="4.5" fill="#fff" stroke="#333" stroke-width="1.2"/></svg>
+    referenced, not presented</span>
+  <span><svg width="30" height="17" aria-hidden="true"><circle cx="6" cy="9" r="4" fill="#333"/><circle cx="21" cy="9" r="8" fill="#333"/></svg>
+    bigger circle = connected to more of the other papers</span>
+  <span>hover a circle for its title</span>
+</p>
+</div>
 
 <noscript><p>This page needs JavaScript to list the papers. The raw list is in
 <a href="papers.json">papers.json</a>.</p></noscript>
@@ -117,129 +131,86 @@ function svgEl(name, attrs) {
   return el;
 }
 
-// Fruchterman-Reingold. 13 nodes, so a few hundred synchronous steps cost nothing
-// and the result is a still picture - no animation loop, no dragging.
-function layout(nodes, edges, W, H) {
-  var n = nodes.length, k = Math.sqrt(W * H / n) * 0.9, byId = {}, steps = 600;
+// Radius grows with how many papers a node is connected to, so the hubs read as hubs.
+function radiusFor(degree) { return 4 + 2.6 * Math.sqrt(degree); }
+
+// A small live force simulation: Fruchterman-Reingold repulsion and attraction,
+// integrated with velocities so it visibly settles, and restartable when a node
+// is dragged. No library, and it stops running once it comes to rest.
+function drawGraph(graph) {
+  var svg = document.getElementById("graph");
+  var W = 900, H = 540, byId = {};
+  var nodes = graph.nodes, n = nodes.length;
+  var k = Math.sqrt(W * H / n) * 0.72;
+
   nodes.forEach(function (d, i) {
-    // Golden-angle start instead of random, so the layout is identical on every load.
-    var ang = i * 2.399963, rad = 0.35 * Math.min(W, H) * Math.sqrt((i + 0.5) / n);
+    // Golden-angle start instead of random, so every load settles the same way.
+    var ang = i * 2.399963, rad = 0.32 * Math.min(W, H) * Math.sqrt((i + 0.5) / n);
     d.x = W / 2 + rad * Math.cos(ang);
     d.y = H / 2 + rad * Math.sin(ang);
+    d.vx = 0; d.vy = 0;
     byId[d.id] = d;
   });
-  for (var step = 0; step < steps; step++) {
-    var temp = k * 0.08 * (1 - step / steps);
-    nodes.forEach(function (d) { d.dx = 0; d.dy = 0; });
+  var edges = graph.edges.filter(function (e) {
+    e.source = byId[e.a]; e.target = byId[e.b];
+    return e.source && e.target;
+  });
+  nodes.forEach(function (d) { d.degree = 0; });
+  edges.forEach(function (e) { e.source.degree++; e.target.degree++; });
+  nodes.forEach(function (d) { d.r = radiusFor(d.degree); });
+
+  function step(alpha) {
+    nodes.forEach(function (d) { d.fx = 0; d.fy = 0; });
     for (var i = 0; i < n; i++) {
       for (var j = i + 1; j < n; j++) {
         var u = nodes[i], v = nodes[j];
         var ex = u.x - v.x, ey = u.y - v.y;
         var dist = Math.sqrt(ex * ex + ey * ey) || 0.01;
         var rep = k * k / dist;
-        u.dx += ex / dist * rep; u.dy += ey / dist * rep;
-        v.dx -= ex / dist * rep; v.dy -= ey / dist * rep;
+        u.fx += ex / dist * rep; u.fy += ey / dist * rep;
+        v.fx -= ex / dist * rep; v.fy -= ey / dist * rep;
       }
     }
     edges.forEach(function (e) {
-      var u = byId[e.a], v = byId[e.b];
-      if (!u || !v) return;
-      var ex = u.x - v.x, ey = u.y - v.y;
+      var ex = e.source.x - e.target.x, ey = e.source.y - e.target.y;
       var dist = Math.sqrt(ex * ex + ey * ey) || 0.01;
       // Damped, or the near-complete RL cluster crushes itself into one dot.
       var att = dist * dist / k * 0.3;
-      u.dx -= ex / dist * att; u.dy -= ey / dist * att;
-      v.dx += ex / dist * att; v.dy += ey / dist * att;
+      e.source.fx -= ex / dist * att; e.source.fy -= ey / dist * att;
+      e.target.fx += ex / dist * att; e.target.fy += ey / dist * att;
     });
     nodes.forEach(function (d) {
       // Weak pull inwards, or the unconnected papers drift off the canvas.
-      d.dx += (W / 2 - d.x) * 0.02;
-      d.dy += (H / 2 - d.y) * 0.02;
-      var mag = Math.sqrt(d.dx * d.dx + d.dy * d.dy) || 0.01;
-      d.x += d.dx / mag * Math.min(mag, temp);
-      d.y += d.dy / mag * Math.min(mag, temp);
+      d.fx += (W / 2 - d.x) * 0.03;
+      d.fy += (H / 2 - d.y) * 0.03;
+      if (d.pinned) { d.vx = 0; d.vy = 0; return; }
+      d.vx = (d.vx + d.fx * alpha * 0.02) * 0.82;
+      d.vy = (d.vy + d.fy * alpha * 0.02) * 0.82;
+      d.x += d.vx; d.y += d.vy;
+    });
+    separate();
+    nodes.forEach(function (d) {
+      d.x = Math.max(d.r + 6, Math.min(W - d.r - 6, d.x));
+      d.y = Math.max(d.r + 6, Math.min(H - d.r - 24, d.y));
     });
   }
-  fitToBox(nodes, W, H);
-  unoverlap(nodes, W, H);
-  expandToFill(nodes, W, H);
-}
 
-// Half the width of a node's label box. The graph is unreadable if these collide,
-// so this is what the separation pass below actually keeps apart.
-function halfWidth(d) { return d.label.length * 2.95 + 7; }
-
-// Push apart any two nodes whose labels would overlap, along whichever axis needs
-// the smaller shove. Runs after the force layout and barely disturbs it.
-function unoverlap(nodes, W, H) {
-  var HALF_H = 17, padX = 70, padY = 22;
-  for (var pass = 0; pass < 300; pass++) {
-    var moved = false;
-    for (var i = 0; i < nodes.length; i++) {
-      for (var j = i + 1; j < nodes.length; j++) {
+  // Keep the circles from overlapping. Labels only appear one at a time, on
+  // hover, so they no longer need room reserved for them.
+  function separate() {
+    for (var i = 0; i < n; i++) {
+      for (var j = i + 1; j < n; j++) {
         var a = nodes[i], b = nodes[j];
         var dx = b.x - a.x, dy = b.y - a.y;
-        var needX = halfWidth(a) + halfWidth(b) - Math.abs(dx);
-        var needY = 2 * HALF_H - Math.abs(dy);
-        if (needX <= 0 || needY <= 0) continue;
-        moved = true;
-        if (needX < needY * 3) {
-          var sx = (dx < 0 ? -1 : 1) * needX / 2;
-          a.x -= sx; b.x += sx;
-        } else {
-          var sy = (dy < 0 ? -1 : 1) * needY / 2;
-          a.y -= sy; b.y += sy;
-        }
+        var dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+        var min = a.r + b.r + 10;
+        if (dist >= min) continue;
+        var push = (min - dist) / 2;
+        if (!a.pinned) { a.x -= dx / dist * push; a.y -= dy / dist * push; }
+        if (!b.pinned) { b.x += dx / dist * push; b.y += dy / dist * push; }
       }
     }
-    nodes.forEach(function (d) {  // keep everything inside the viewBox
-      d.x = Math.max(padX, Math.min(W - padX, d.x));
-      d.y = Math.max(padY, Math.min(H - padY - 20, d.y));
-    });
-    if (!moved) break;
   }
-}
-
-// Rescale the finished layout into the viewBox, leaving room for the labels.
-function fitToBox(nodes, W, H) {
-  var padX = 95, padY = 34;
-  var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  nodes.forEach(function (d) {
-    minX = Math.min(minX, d.x - halfWidth(d)); maxX = Math.max(maxX, d.x + halfWidth(d));
-    minY = Math.min(minY, d.y); maxY = Math.max(maxY, d.y + 22);
-  });
-  var spanX = maxX - minX || 1, spanY = maxY - minY || 1;
-  var scale = Math.min((W - 2 * padX) / spanX, (H - 2 * padY) / spanY, 1);
-  var offX = (W - spanX * scale) / 2, offY = (H - spanY * scale) / 2;
-  nodes.forEach(function (d) {
-    d.x = offX + (d.x - minX) * scale;
-    d.y = offY + (d.y - minY) * scale;
-  });
-}
-
-// Scaling up can only increase the gaps unoverlap() just created, so this fills
-// the canvas without reintroducing any label collisions.
-function expandToFill(nodes, W, H) {
-  var padX = 60, padY = 26;
-  var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  nodes.forEach(function (d) {
-    minX = Math.min(minX, d.x - halfWidth(d)); maxX = Math.max(maxX, d.x + halfWidth(d));
-    minY = Math.min(minY, d.y - 8); maxY = Math.max(maxY, d.y + 24);
-  });
-  var scale = Math.min((W - 2 * padX) / (maxX - minX || 1),
-                       (H - 2 * padY) / (maxY - minY || 1));
-  if (scale <= 1) return;
-  var cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
-  nodes.forEach(function (d) {
-    d.x = W / 2 + (d.x - cx) * scale;
-    d.y = H / 2 + (d.y - cy) * scale;
-  });
-}
-
-function drawGraph(graph) {
-  var svg = document.getElementById("graph"), W = 900, H = 540, byId = {};
-  layout(graph.nodes, graph.edges, W, H);
-  graph.nodes.forEach(function (d) { byId[d.id] = d; });
 
   var defs = svgEl("defs");
   var marker = svgEl("marker", { id: "arrow", viewBox: "0 0 10 10", refX: "10", refY: "5",
@@ -248,39 +219,117 @@ function drawGraph(graph) {
   defs.appendChild(marker);
   svg.appendChild(defs);
 
-  graph.edges.forEach(function (e) {
-    var u = byId[e.a], v = byId[e.b];
-    if (!u || !v) return;
+  edges.forEach(function (e) {
     var cites = e.kind === "cites";
-    // Stop the line short of the target so the arrowhead does not sit on the circle.
-    var ex = v.x - u.x, ey = v.y - u.y;
-    var dist = Math.sqrt(ex * ex + ey * ey) || 1;
-    var attrs = {
-      x1: u.x + ex / dist * 8, y1: u.y + ey / dist * 8,
-      x2: v.x - ex / dist * 10, y2: v.y - ey / dist * 10,
-      stroke: cites ? "#aaa" : "#d8d8d8", "stroke-width": cites ? 1.2 : 1
-    };
+    var attrs = { stroke: cites ? "#aaa" : "#d8d8d8", "stroke-width": cites ? 1.2 : 1 };
     if (cites) attrs["marker-end"] = "url(#arrow)";
     else attrs["stroke-dasharray"] = "3,3";
-    svg.appendChild(svgEl("line", attrs));
+    e.el = svg.appendChild(svgEl("line", attrs));
   });
 
-  graph.nodes.forEach(function (d) {
+  nodes.forEach(function (d) {
     var presented = d.kind === "paper";
-    var anchor = svgEl("a", { href: d.url, target: "_blank", rel: "noopener" });
+    d.el = svgEl("a", { href: d.url, target: "_blank", rel: "noopener", draggable: "false" });
     var tip = svgEl("title");
     tip.textContent = d.title;
-    anchor.appendChild(tip);
-    anchor.appendChild(svgEl("circle", { cx: d.x, cy: d.y, r: presented ? 6 : 4.5,
+    d.el.appendChild(tip);
+    // Invisible disc underneath, so small nodes are still easy to hit.
+    d.hit = d.el.appendChild(svgEl("circle", { r: d.r + 7, fill: "transparent" }));
+    d.dot = d.el.appendChild(svgEl("circle", { r: d.r,
       fill: presented ? "#333" : "#fff", stroke: "#333", "stroke-width": 1.2 }));
-    // Push the label away from the middle, where the nodes are densest.
-    var label = svgEl("text", { x: d.x, y: d.y + 19, "text-anchor": "middle" });
-    label.textContent = d.label;
-    anchor.appendChild(label);
-    svg.appendChild(anchor);
+    d.text = d.el.appendChild(svgEl("text", { "text-anchor": "middle" }));
+    d.text.textContent = d.label;
+    svg.appendChild(d.el);
+    d.el.addEventListener("pointerdown", function (evt) { grab(d, evt); });
+    d.el.addEventListener("pointerenter", function () { highlight(d); });
+    d.el.addEventListener("pointerleave", function () { highlight(null); });
+    // A drag ends in a click; only follow the link when the node did not move.
+    d.el.addEventListener("click", function (evt) { if (moved) evt.preventDefault(); });
+  });
+
+  function paint() {
+    edges.forEach(function (e) {
+      // Stop the line short of the target so the arrowhead clears the circle.
+      var ex = e.target.x - e.source.x, ey = e.target.y - e.source.y;
+      var dist = Math.sqrt(ex * ex + ey * ey) || 1;
+      e.el.setAttribute("x1", e.source.x + ex / dist * (e.source.r + 2));
+      e.el.setAttribute("y1", e.source.y + ey / dist * (e.source.r + 2));
+      e.el.setAttribute("x2", e.target.x - ex / dist * (e.target.r + 4));
+      e.el.setAttribute("y2", e.target.y - ey / dist * (e.target.r + 4));
+    });
+    nodes.forEach(function (d) {
+      d.dot.setAttribute("cx", d.x); d.dot.setAttribute("cy", d.y);
+      d.hit.setAttribute("cx", d.x); d.hit.setAttribute("cy", d.y);
+      d.text.setAttribute("x", d.x);
+      d.text.setAttribute("y", d.y + d.r + 13);
+    });
+  }
+
+  // Fade everything not touching the hovered node.
+  function highlight(focus) {
+    var near = {};
+    if (focus) {
+      near[focus.id] = true;
+      edges.forEach(function (e) {
+        if (e.a === focus.id) near[e.b] = true;
+        if (e.b === focus.id) near[e.a] = true;
+      });
+    }
+    nodes.forEach(function (d) {
+      d.el.classList.toggle("dim", !!focus && !near[d.id]);
+      d.el.classList.toggle("on", d === focus);
+    });
+    edges.forEach(function (e) {
+      e.el.classList.toggle("dim", !!focus && e.a !== focus.id && e.b !== focus.id);
+    });
+  }
+
+  var alpha = 1, running = false, held = null, moved = false;
+
+  function frame() {
+    step(alpha);
+    paint();
+    alpha *= 0.985;
+    if (alpha > 0.02 || held) requestAnimationFrame(frame);
+    else running = false;
+  }
+
+  function kick(to) {
+    alpha = Math.max(alpha, to);
+    if (!running) { running = true; requestAnimationFrame(frame); }
+  }
+
+  function at(evt) {
+    var box = svg.getBoundingClientRect();
+    return { x: (evt.clientX - box.left) / box.width * W,
+             y: (evt.clientY - box.top) / box.height * H };
+  }
+
+  function grab(d, evt) {
+    evt.preventDefault();
+    held = d; moved = false; d.pinned = true;
+    kick(0.35);
+  }
+
+  window.addEventListener("pointermove", function (evt) {
+    if (!held) return;
+    var p = at(evt);
+    if (Math.abs(p.x - held.x) > 2 || Math.abs(p.y - held.y) > 2) moved = true;
+    held.x = p.x; held.y = p.y;
+    kick(0.35);
+  });
+
+  window.addEventListener("pointerup", function () {
+    if (!held) return;
+    held.pinned = false;
+    held = null;
+    kick(0.35);
+    // Let the click handler see `moved`, then clear it for the next grab.
+    setTimeout(function () { moved = false; }, 0);
   });
 
   document.getElementById("graph-box").hidden = false;
+  kick(1);
 }
 
 // Edges are committed in edges.json, regenerated by tools/build_graph.py.
