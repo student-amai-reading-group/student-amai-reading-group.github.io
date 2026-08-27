@@ -5,28 +5,32 @@
       "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
       "url": "https://arxiv.org/abs/2305.18290",
       "kind": "paper",
-      "citations": 10255
+      "citations": 10255,
+      "date": "2026-09-06"
     },
     {
       "id": "2306.10898",
       "title": "B-cos Alignment for Inherently Interpretable CNNs and Vision Transformers",
       "url": "https://arxiv.org/abs/2306.10898",
       "kind": "paper",
-      "citations": 49
+      "citations": 49,
+      "date": "2026-05-31"
     },
     {
       "id": "2306.12383",
       "title": "Sample Complexity for Quadratic Bandits: Hessian Dependent Bounds and Optimal Algorithms",
       "url": "https://arxiv.org/abs/2306.12383",
       "kind": "paper",
-      "citations": 3
+      "citations": 3,
+      "date": "2026-08-23"
     },
     {
       "id": "2308.16017",
       "title": "Hidden-Role Games: Equilibrium Concepts and Computation",
       "url": "https://arxiv.org/abs/2308.16017v2",
       "kind": "paper",
-      "citations": 13
+      "citations": 13,
+      "date": "2026-07-20"
     },
     {
       "id": "2402.03300",
@@ -40,7 +44,8 @@
       "title": "The Sharpness Disparity Principle in Transformers for Accelerating Language Model Pre-Training",
       "url": "https://arxiv.org/abs/2502.19002",
       "kind": "paper",
-      "citations": 26
+      "citations": 26,
+      "date": "2026-03-22"
     },
     {
       "id": "2503.20783",
@@ -54,49 +59,56 @@
       "title": "Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?",
       "url": "https://arxiv.org/abs/2504.13837",
       "kind": "paper",
-      "citations": 996
+      "citations": 996,
+      "date": "2026-05-24"
     },
     {
       "id": "2505.17863",
       "title": "The emergence of sparse attention: impact of data distribution and benefits of repetition",
       "url": "https://arxiv.org/abs/2505.17863",
       "kind": "paper",
-      "citations": 26
+      "citations": 26,
+      "date": "2026-03-15"
     },
     {
       "id": "2506.14245",
       "title": "Reinforcement Learning with Verifiable Rewards Implicitly Incentivizes Correct Reasoning in Base LLMs",
       "url": "https://arxiv.org/abs/2506.14245",
       "kind": "paper",
-      "citations": 252
+      "citations": 252,
+      "date": "2026-06-14"
     },
     {
       "id": "2507.14805",
       "title": "Subliminal Learning: Language models transmit behavioral traits via hidden signals in data",
       "url": "https://arxiv.org/abs/2507.14805",
       "kind": "paper",
-      "citations": 95
+      "citations": 95,
+      "date": "2026-03-29"
     },
     {
       "id": "2510.13651",
       "title": "What is the objective of reasoning with reinforcement learning?",
       "url": "https://arxiv.org/abs/2510.13651",
       "kind": "paper",
-      "citations": 16
+      "citations": 16,
+      "date": "2026-03-08"
     },
     {
       "id": "2603.08371",
       "title": "Leaderboard Incentives: Model Rankings under Strategic Post-Training",
       "url": "https://arxiv.org/abs/2603.08371v1",
       "kind": "paper",
-      "citations": 2
+      "citations": 2,
+      "date": "2026-03-22"
     },
     {
       "id": "2603.22117",
       "title": "On the Direction of RLVR Updates for LLM Reasoning: Identification and Exploitation",
       "url": "https://arxiv.org/abs/2603.22117",
       "kind": "paper",
-      "citations": 12
+      "citations": 12,
+      "date": "2026-07-27"
     }
   ],
   "edges": [

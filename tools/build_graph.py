@@ -23,6 +23,8 @@ def collect(papers):
             if aid and aid not in nodes:
                 nodes[aid] = {"id": aid, "title": entry["title"],
                               "url": entry["url"], "kind": kind}
+                if kind == "paper":
+                    nodes[aid]["date"] = p["date"]  # lets the page mark it upcoming
     return nodes
 
 def previous_counts():

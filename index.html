@@ -67,6 +67,8 @@ we sometimes play social deduction or card games.</p>
       presented at a session</span>
     <span><svg width="40" height="13" aria-hidden="true"><circle cx="19" cy="7" r="4.5" fill="#fff" stroke="#333" stroke-width="1.2"/></svg>
       referenced, not presented</span>
+    <span><svg width="40" height="15" aria-hidden="true"><circle cx="19" cy="8" r="6" fill="#fff" stroke="#333" stroke-width="1.2" stroke-dasharray="3,2.5"/></svg>
+      upcoming</span>
     <span><svg width="40" height="19" aria-hidden="true"><circle cx="6" cy="10" r="4" fill="#333"/><circle cx="26" cy="10" r="8.5" fill="#333"/></svg>
       size: # of citations</span>
   </div>
@@ -164,7 +166,11 @@ function drawGraph(graph) {
     e.source = byId[e.a]; e.target = byId[e.b];
     return e.source && e.target;
   });
-  nodes.forEach(function (d) { d.r = radiusFor(d.citations || 0); });
+  var now = today();
+  nodes.forEach(function (d) {
+    d.r = radiusFor(d.citations || 0);
+    d.upcoming = !!d.date && d.date >= now;  // same rule as the two tables
+  });
 
   function step(alpha) {
     nodes.forEach(function (d) { d.fx = 0; d.fy = 0; });
@@ -242,8 +248,11 @@ function drawGraph(graph) {
     d.el.appendChild(tip);
     // Invisible disc underneath, so small nodes are still easy to hit.
     d.hit = d.el.appendChild(svgEl("circle", { r: d.r + 7, fill: "transparent" }));
+    // Filled once presented; hollow-and-dashed while it is still upcoming.
     d.dot = d.el.appendChild(svgEl("circle", { r: d.r,
-      fill: presented ? "#333" : "#fff", stroke: "#333", "stroke-width": 1.2 }));
+      fill: presented && !d.upcoming ? "#333" : "#fff",
+      stroke: "#333", "stroke-width": 1.2 }));
+    if (d.upcoming) d.dot.setAttribute("stroke-dasharray", "3,2.5");
     d.text = d.el.appendChild(svgEl("text", { "text-anchor": "middle" }));
     svg.appendChild(d.el);
     d.el.addEventListener("pointerdown", function (evt) { grab(d, evt); });
