@@ -21,9 +21,18 @@ def collect(papers):
         for entry, kind in [(p, "paper")] + [(r, "reference") for r in p.get("references", [])]:
             aid = arxiv_id(entry.get("url"))
             if aid and aid not in nodes:
-                nodes[aid] = {"id": aid, "label": entry.get("short") or entry["title"],
-                              "title": entry["title"], "url": entry["url"], "kind": kind}
+                nodes[aid] = {"id": aid, "title": entry["title"],
+                              "url": entry["url"], "kind": kind}
     return nodes
+
+def citation_counts(aids):
+    """One batch call for how often each paper has been cited."""
+    req = urllib.request.Request(
+        "https://api.semanticscholar.org/graph/v1/paper/batch?fields=citationCount",
+        data=json.dumps({"ids": ["arXiv:" + a for a in aids]}).encode(),
+        headers={"Content-Type": "application/json"})
+    rows = json.load(urllib.request.urlopen(req, timeout=60))
+    return {a: (row or {}).get("citationCount") or 0 for a, row in zip(aids, rows)}
 
 def references_of(aid):
     url = ("https://api.semanticscholar.org/graph/v1/paper/arXiv:%s"
@@ -39,6 +48,14 @@ def references_of(aid):
 def main():
     papers = json.load(open("papers.json"))
     nodes = collect(papers)
+    try:
+        for aid, count in citation_counts(list(nodes)).items():
+            nodes[aid]["citations"] = count
+    except Exception as exc:
+        print("citation counts failed (%s)" % exc, file=sys.stderr)
+        for aid in nodes:
+            nodes[aid].setdefault("citations", 0)
+
     refs = {}
     for aid in nodes:
         try:

@@ -19,8 +19,10 @@
   #graph a:active { cursor: grabbing; }
   #graph .dim { opacity: 0.15; }
   .legend { font-size: 0.85em; color: #555; display: flex; flex-wrap: wrap;
-            gap: 0.3em 1.8em; align-items: center; margin-top: 0.2em; }
-  .legend span { display: inline-flex; align-items: center; gap: 0.45em; }
+            gap: 0.9em 3.5em; margin-top: 0.4em; }
+  .legend > div { display: flex; flex-direction: column; gap: 0.35em; }
+  .legend span { display: flex; align-items: center; gap: 0.5em; }
+  .legend-head { color: #222; }
   #graph text { font-size: 11px; fill: #222; paint-order: stroke; opacity: 0;
                 stroke: #fff; stroke-width: 3px; stroke-linejoin: round;
                 pointer-events: none; transition: opacity 0.1s; }
@@ -51,19 +53,24 @@ we sometimes play social deduction or card games.</p>
 
 <div id="graph-box" hidden>
 <svg id="graph" viewBox="0 0 900 540" role="img" aria-label="Graph of how the papers cite each other"></svg>
-<p class="legend">
-  <span><svg width="40" height="9" aria-hidden="true"><line x1="0" y1="4.5" x2="30" y2="4.5" stroke="#aaa" stroke-width="1.2"/><path d="M30 1.5 L38 4.5 L30 7.5 z" fill="#aaa"/></svg>
-    A&nbsp;&rarr;&nbsp;B: A cites B</span>
-  <span><svg width="40" height="9" aria-hidden="true"><line x1="0" y1="4.5" x2="38" y2="4.5" stroke="#c4c4c4" stroke-width="1" stroke-dasharray="3,3"/></svg>
-    neither cites the other, but they share at least two references</span>
-  <span><svg width="16" height="13" aria-hidden="true"><circle cx="8" cy="7" r="6" fill="#333"/></svg>
-    presented</span>
-  <span><svg width="16" height="13" aria-hidden="true"><circle cx="8" cy="7" r="4.5" fill="#fff" stroke="#333" stroke-width="1.2"/></svg>
-    referenced, not presented</span>
-  <span><svg width="30" height="17" aria-hidden="true"><circle cx="6" cy="9" r="4" fill="#333"/><circle cx="21" cy="9" r="8" fill="#333"/></svg>
-    bigger circle = connected to more of the other papers</span>
-  <span>hover a circle for its title</span>
-</p>
+<div class="legend">
+  <div>
+    <span class="legend-head">Lines</span>
+    <span><svg width="40" height="9" aria-hidden="true"><line x1="0" y1="4.5" x2="30" y2="4.5" stroke="#aaa" stroke-width="1.2"/><path d="M30 1.5 L38 4.5 L30 7.5 z" fill="#aaa"/></svg>
+      A&nbsp;&rarr;&nbsp;B: A cites B</span>
+    <span><svg width="40" height="9" aria-hidden="true"><line x1="0" y1="4.5" x2="38" y2="4.5" stroke="#c4c4c4" stroke-width="1" stroke-dasharray="3,3"/></svg>
+      neither cites the other; at least two shared references</span>
+  </div>
+  <div>
+    <span class="legend-head">Circles</span>
+    <span><svg width="40" height="13" aria-hidden="true"><circle cx="19" cy="7" r="6" fill="#333"/></svg>
+      presented at a session</span>
+    <span><svg width="40" height="13" aria-hidden="true"><circle cx="19" cy="7" r="4.5" fill="#fff" stroke="#333" stroke-width="1.2"/></svg>
+      referenced, not presented</span>
+    <span><svg width="40" height="19" aria-hidden="true"><circle cx="6" cy="10" r="4" fill="#333"/><circle cx="26" cy="10" r="8.5" fill="#333"/></svg>
+      size: times cited, on a log scale</span>
+  </div>
+</div>
 </div>
 
 <noscript><p>This page needs JavaScript to list the papers. The raw list is in
@@ -131,8 +138,10 @@ function svgEl(name, attrs) {
   return el;
 }
 
-// Radius grows with how many papers a node is connected to, so the hubs read as hubs.
-function radiusFor(degree) { return 4 + 2.6 * Math.sqrt(degree); }
+// Citation counts here span 2 to over 8000, so size on a log scale - a linear one
+// would leave everything but DeepSeekMath as a dot. Counts come from Semantic
+// Scholar (Google Scholar has no public API); they run lower than Scholar's.
+function radiusFor(citations) { return 3.5 + 3.4 * Math.log(1 + citations) / Math.LN10; }
 
 // A small live force simulation: Fruchterman-Reingold repulsion and attraction,
 // integrated with velocities so it visibly settles, and restartable when a node
@@ -155,9 +164,7 @@ function drawGraph(graph) {
     e.source = byId[e.a]; e.target = byId[e.b];
     return e.source && e.target;
   });
-  nodes.forEach(function (d) { d.degree = 0; });
-  edges.forEach(function (e) { e.source.degree++; e.target.degree++; });
-  nodes.forEach(function (d) { d.r = radiusFor(d.degree); });
+  nodes.forEach(function (d) { d.r = radiusFor(d.citations || 0); });
 
   function step(alpha) {
     nodes.forEach(function (d) { d.fx = 0; d.fy = 0; });
@@ -238,7 +245,6 @@ function drawGraph(graph) {
     d.dot = d.el.appendChild(svgEl("circle", { r: d.r,
       fill: presented ? "#333" : "#fff", stroke: "#333", "stroke-width": 1.2 }));
     d.text = d.el.appendChild(svgEl("text", { "text-anchor": "middle" }));
-    d.text.textContent = d.label;
     svg.appendChild(d.el);
     d.el.addEventListener("pointerdown", function (evt) { grab(d, evt); });
     d.el.addEventListener("pointerenter", function () { highlight(d); });
@@ -246,6 +252,45 @@ function drawGraph(graph) {
     // A drag ends in a click; only follow the link when the node did not move.
     d.el.addEventListener("click", function (evt) { if (moved) evt.preventDefault(); });
   });
+
+  // Titles run long, so break them over a few lines rather than letting one
+  // line run off the canvas.
+  function wrap(title) {
+    var words = title.split(" "), lines = [], cur = "";
+    words.forEach(function (word) {
+      if (cur && (cur + " " + word).length > 42) { lines.push(cur); cur = word; }
+      else cur = cur ? cur + " " + word : word;
+    });
+    if (cur) lines.push(cur);
+    return lines;
+  }
+
+  function buildLabel(d) {
+    while (d.text.firstChild) d.text.removeChild(d.text.firstChild);
+    d.lines = wrap(d.title);
+    d.lines.forEach(function (line, i) {
+      var span = svgEl("tspan", { x: 0, dy: i ? 13 : 0 });
+      span.textContent = line;
+      d.text.appendChild(span);
+    });
+  }
+
+  // Nudge the label back inside the viewBox, and flip it above the circle when
+  // there is no room below - otherwise nodes near an edge lose their title.
+  function placeLabel(d) {
+    if (!d.lines) return;
+    var width = 0;
+    try { width = d.text.getBBox().width; } catch (err) { width = 0; }
+    var half = width / 2 + 4;
+    var x = Math.max(half, Math.min(W - half, d.x));
+    var depth = (d.lines.length - 1) * 13;
+    var below = d.y + d.r + 13 + depth < H - 4;
+    var y = below ? d.y + d.r + 13 : d.y - d.r - 8 - depth;
+    for (var i = 0; i < d.text.childNodes.length; i++) {
+      d.text.childNodes[i].setAttribute("x", x);
+    }
+    d.text.setAttribute("y", y);
+  }
 
   function paint() {
     edges.forEach(function (e) {
@@ -260,13 +305,14 @@ function drawGraph(graph) {
     nodes.forEach(function (d) {
       d.dot.setAttribute("cx", d.x); d.dot.setAttribute("cy", d.y);
       d.hit.setAttribute("cx", d.x); d.hit.setAttribute("cy", d.y);
-      d.text.setAttribute("x", d.x);
-      d.text.setAttribute("y", d.y + d.r + 13);
     });
+    if (focused) placeLabel(focused);  // only the hovered label is visible
   }
 
   // Fade everything not touching the hovered node.
   function highlight(focus) {
+    focused = focus;
+    if (focus) { buildLabel(focus); placeLabel(focus); }
     var near = {};
     if (focus) {
       near[focus.id] = true;
@@ -284,7 +330,7 @@ function drawGraph(graph) {
     });
   }
 
-  var alpha = 1, running = false, held = null, moved = false;
+  var alpha = 1, running = false, held = null, moved = false, focused = null;
 
   function frame() {
     step(alpha);

@@ -2,94 +2,94 @@
   "nodes": [
     {
       "id": "2306.10898",
-      "label": "B-cos Networks",
       "title": "B-cos Alignment for Inherently Interpretable CNNs and Vision Transformers",
       "url": "https://arxiv.org/abs/2306.10898",
-      "kind": "paper"
+      "kind": "paper",
+      "citations": 49
     },
     {
       "id": "2306.12383",
-      "label": "Quadratic Bandits",
       "title": "Sample Complexity for Quadratic Bandits: Hessian Dependent Bounds and Optimal Algorithms",
       "url": "https://arxiv.org/abs/2306.12383",
-      "kind": "paper"
+      "kind": "paper",
+      "citations": 3
     },
     {
       "id": "2308.16017",
-      "label": "Hidden-Role Games",
       "title": "Hidden-Role Games: Equilibrium Concepts and Computation",
       "url": "https://arxiv.org/abs/2308.16017v2",
-      "kind": "paper"
+      "kind": "paper",
+      "citations": 13
     },
     {
       "id": "2402.03300",
-      "label": "DeepSeekMath (GRPO)",
       "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
       "url": "https://arxiv.org/abs/2402.03300",
-      "kind": "reference"
+      "kind": "reference",
+      "citations": 8408
     },
     {
       "id": "2502.19002",
-      "label": "Sharpness Disparity",
       "title": "The Sharpness Disparity Principle in Transformers for Accelerating Language Model Pre-Training",
       "url": "https://arxiv.org/abs/2502.19002",
-      "kind": "paper"
+      "kind": "paper",
+      "citations": 26
     },
     {
       "id": "2503.20783",
-      "label": "Dr. GRPO",
       "title": "Understanding R1-Zero-Like Training: A Critical Perspective",
       "url": "https://arxiv.org/abs/2503.20783",
-      "kind": "reference"
+      "kind": "reference",
+      "citations": 1261
     },
     {
       "id": "2504.13837",
-      "label": "RL Beyond Base Model",
       "title": "Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?",
       "url": "https://arxiv.org/abs/2504.13837",
-      "kind": "paper"
+      "kind": "paper",
+      "citations": 996
     },
     {
       "id": "2505.17863",
-      "label": "Sparse Attention",
       "title": "The emergence of sparse attention: impact of data distribution and benefits of repetition",
       "url": "https://arxiv.org/abs/2505.17863",
-      "kind": "paper"
+      "kind": "paper",
+      "citations": 26
     },
     {
       "id": "2506.14245",
-      "label": "RLVR Implicit Reasoning",
       "title": "Reinforcement Learning with Verifiable Rewards Implicitly Incentivizes Correct Reasoning in Base LLMs",
       "url": "https://arxiv.org/abs/2506.14245",
-      "kind": "paper"
+      "kind": "paper",
+      "citations": 252
     },
     {
       "id": "2507.14805",
-      "label": "Subliminal Learning",
       "title": "Subliminal Learning: Language models transmit behavioral traits via hidden signals in data",
       "url": "https://arxiv.org/abs/2507.14805",
-      "kind": "paper"
+      "kind": "paper",
+      "citations": 95
     },
     {
       "id": "2510.13651",
-      "label": "RL Reasoning Objective",
       "title": "What is the objective of reasoning with reinforcement learning?",
       "url": "https://arxiv.org/abs/2510.13651",
-      "kind": "paper"
+      "kind": "paper",
+      "citations": 16
     },
     {
       "id": "2603.08371",
-      "label": "Leaderboard Incentives",
       "title": "Leaderboard Incentives: Model Rankings under Strategic Post-Training",
       "url": "https://arxiv.org/abs/2603.08371v1",
-      "kind": "paper"
+      "kind": "paper",
+      "citations": 2
     },
     {
       "id": "2603.22117",
-      "label": "RLVR Update Direction",
       "title": "On the Direction of RLVR Updates for LLM Reasoning: Identification and Exploitation",
       "url": "https://arxiv.org/abs/2603.22117",
-      "kind": "paper"
+      "kind": "paper",
+      "citations": 12
     }
   ],
   "edges": [
