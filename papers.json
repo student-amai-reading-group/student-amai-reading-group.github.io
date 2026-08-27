@@ -1,5 +1,12 @@
 [
   {
+    "date": "2026-09-06",
+    "presenter": "Basil",
+    "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+    "authors": "Rafailov et al., 2023",
+    "url": "https://arxiv.org/abs/2305.18290"
+  },
+  {
     "date": "2026-08-23",
     "presenter": "Felix",
     "title": "Sample Complexity for Quadratic Bandits: Hessian Dependent Bounds and Optimal Algorithms",

@@ -1,6 +1,13 @@
 {
   "nodes": [
     {
+      "id": "2305.18290",
+      "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+      "url": "https://arxiv.org/abs/2305.18290",
+      "kind": "paper",
+      "citations": 10255
+    },
+    {
       "id": "2306.10898",
       "title": "B-cos Alignment for Inherently Interpretable CNNs and Vision Transformers",
       "url": "https://arxiv.org/abs/2306.10898",
@@ -26,7 +33,7 @@
       "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
       "url": "https://arxiv.org/abs/2402.03300",
       "kind": "reference",
-      "citations": 8408
+      "citations": 8412
     },
     {
       "id": "2502.19002",
@@ -109,8 +116,18 @@
       "kind": "cites"
     },
     {
+      "a": "2402.03300",
+      "b": "2305.18290",
+      "kind": "cites"
+    },
+    {
       "a": "2503.20783",
       "b": "2402.03300",
+      "kind": "cites"
+    },
+    {
+      "a": "2506.14245",
+      "b": "2305.18290",
       "kind": "cites"
     },
     {
@@ -130,6 +147,11 @@
     },
     {
       "a": "2504.13837",
+      "b": "2305.18290",
+      "kind": "cites"
+    },
+    {
+      "a": "2504.13837",
       "b": "2402.03300",
       "kind": "cites"
     },
@@ -142,6 +164,18 @@
       "a": "2510.13651",
       "b": "2402.03300",
       "kind": "cites"
+    },
+    {
+      "a": "2305.18290",
+      "b": "2603.22117",
+      "kind": "shares",
+      "weight": 3
+    },
+    {
+      "a": "2305.18290",
+      "b": "2503.20783",
+      "kind": "shares",
+      "weight": 3
     },
     {
       "a": "2603.22117",

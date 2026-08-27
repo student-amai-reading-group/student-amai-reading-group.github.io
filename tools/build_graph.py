@@ -25,14 +25,36 @@ def collect(papers):
                               "url": entry["url"], "kind": kind}
     return nodes
 
+def previous_counts():
+    """Citation counts from the last run, used if the API refuses this one."""
+    try:
+        old = json.load(open("edges.json"))
+    except Exception:
+        return {}
+    return {n["id"]: n["citations"] for n in old.get("nodes", []) if n.get("citations")}
+
 def citation_counts(aids):
-    """One batch call for how often each paper has been cited."""
+    """One batch call for how often each paper has been cited.
+
+    The API rate-limits aggressively, so retry with backoff. A miss must never
+    silently become a zero - every node would then render at minimum size.
+    """
     req = urllib.request.Request(
         "https://api.semanticscholar.org/graph/v1/paper/batch?fields=citationCount",
         data=json.dumps({"ids": ["arXiv:" + a for a in aids]}).encode(),
         headers={"Content-Type": "application/json"})
-    rows = json.load(urllib.request.urlopen(req, timeout=60))
-    return {a: (row or {}).get("citationCount") or 0 for a, row in zip(aids, rows)}
+    for attempt, wait in enumerate([15, 45, 90, 0]):
+        try:
+            rows = json.load(urllib.request.urlopen(req, timeout=60))
+            got = {a: (row or {}).get("citationCount") for a, row in zip(aids, rows)}
+            if any(v is not None for v in got.values()):
+                return got
+        except Exception as exc:
+            print("citation batch attempt %d failed (%s)" % (attempt + 1, exc), file=sys.stderr)
+        if wait:
+            print("retrying in %ds" % wait, file=sys.stderr)
+            time.sleep(wait)
+    return {}
 
 def references_of(aid):
     url = ("https://api.semanticscholar.org/graph/v1/paper/arXiv:%s"
@@ -48,13 +70,21 @@ def references_of(aid):
 def main():
     papers = json.load(open("papers.json"))
     nodes = collect(papers)
-    try:
-        for aid, count in citation_counts(list(nodes)).items():
-            nodes[aid]["citations"] = count
-    except Exception as exc:
-        print("citation counts failed (%s)" % exc, file=sys.stderr)
-        for aid in nodes:
-            nodes[aid].setdefault("citations", 0)
+    fresh, kept = citation_counts(list(nodes)), previous_counts()
+    missing = []
+    for aid in nodes:
+        count = fresh.get(aid)
+        if count is None:
+            count = kept.get(aid)          # fall back to the last good value
+            if count is None:
+                missing.append(aid)
+                count = 0
+            else:
+                print("%s: kept previous count %d" % (aid, count), file=sys.stderr)
+        nodes[aid]["citations"] = count
+    if missing:
+        print("WARNING: no citation count for %s - they will render at minimum size"
+              % ", ".join(missing), file=sys.stderr)
 
     refs = {}
     for aid in nodes:
