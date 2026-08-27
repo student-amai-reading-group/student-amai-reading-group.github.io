@@ -8,7 +8,7 @@ import json, re, sys, time, urllib.request
 from itertools import combinations
 
 ARXIV = re.compile(r"arxiv\.org/abs/(\d+\.\d+)")
-COUPLING_MIN = 2  # shared references needed to draw a coupling edge
+COUPLING_MIN = 3  # shared references needed to draw a coupling edge
 
 def arxiv_id(url):
     m = ARXIV.search(url or "")
