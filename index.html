@@ -13,6 +13,14 @@
   th { border-bottom: 1px solid #ccc; font-weight: normal; }
   td.date, td.presenter { white-space: nowrap; }
   .refs { font-size: 0.9em; color: #555; }
+  details { margin-top: 1.6em; }
+  summary { cursor: pointer; font-size: 1.1em; }
+  .note { font-size: 0.9em; color: #555; max-width: 46em; }
+  #graph { width: 100%; height: auto; }
+  #graph text { font-size: 11px; fill: #222; paint-order: stroke;
+                stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+  #graph a { text-decoration: none; }
+  #graph a:hover text { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -34,6 +42,15 @@ we sometimes play social deduction or card games.</p>
   <thead><tr><th>Date</th><th>Presenter</th><th>Paper</th></tr></thead>
   <tbody id="presented"></tbody>
 </table>
+
+<details id="graph-box" hidden open>
+<summary>How the papers connect</summary>
+<p class="note">Solid arrows are direct citations, pointing from a paper to the work it cites.
+Dashed lines join papers that lean on the same references without citing each other. Hollow
+circles were referenced in a session rather than presented. Entries with no arXiv link — a
+thesis, a write-up — are left out.</p>
+<svg id="graph" viewBox="0 0 900 540" role="img" aria-label="Graph of how the papers cite each other"></svg>
+</details>
 
 <noscript><p>This page needs JavaScript to list the papers. The raw list is in
 <a href="papers.json">papers.json</a>.</p></noscript>
@@ -91,6 +108,187 @@ function today() {
   var d = new Date(), m = d.getMonth() + 1, day = d.getDate();
   return d.getFullYear() + "-" + (m < 10 ? "0" : "") + m + "-" + (day < 10 ? "0" : "") + day;
 }
+
+var SVG_NS = "http://www.w3.org/2000/svg";
+
+function svgEl(name, attrs) {
+  var el = document.createElementNS(SVG_NS, name);
+  for (var key in attrs) el.setAttribute(key, attrs[key]);
+  return el;
+}
+
+// Fruchterman-Reingold. 13 nodes, so a few hundred synchronous steps cost nothing
+// and the result is a still picture - no animation loop, no dragging.
+function layout(nodes, edges, W, H) {
+  var n = nodes.length, k = Math.sqrt(W * H / n) * 0.9, byId = {}, steps = 600;
+  nodes.forEach(function (d, i) {
+    // Golden-angle start instead of random, so the layout is identical on every load.
+    var ang = i * 2.399963, rad = 0.35 * Math.min(W, H) * Math.sqrt((i + 0.5) / n);
+    d.x = W / 2 + rad * Math.cos(ang);
+    d.y = H / 2 + rad * Math.sin(ang);
+    byId[d.id] = d;
+  });
+  for (var step = 0; step < steps; step++) {
+    var temp = k * 0.08 * (1 - step / steps);
+    nodes.forEach(function (d) { d.dx = 0; d.dy = 0; });
+    for (var i = 0; i < n; i++) {
+      for (var j = i + 1; j < n; j++) {
+        var u = nodes[i], v = nodes[j];
+        var ex = u.x - v.x, ey = u.y - v.y;
+        var dist = Math.sqrt(ex * ex + ey * ey) || 0.01;
+        var rep = k * k / dist;
+        u.dx += ex / dist * rep; u.dy += ey / dist * rep;
+        v.dx -= ex / dist * rep; v.dy -= ey / dist * rep;
+      }
+    }
+    edges.forEach(function (e) {
+      var u = byId[e.a], v = byId[e.b];
+      if (!u || !v) return;
+      var ex = u.x - v.x, ey = u.y - v.y;
+      var dist = Math.sqrt(ex * ex + ey * ey) || 0.01;
+      // Damped, or the near-complete RL cluster crushes itself into one dot.
+      var att = dist * dist / k * 0.3;
+      u.dx -= ex / dist * att; u.dy -= ey / dist * att;
+      v.dx += ex / dist * att; v.dy += ey / dist * att;
+    });
+    nodes.forEach(function (d) {
+      // Weak pull inwards, or the unconnected papers drift off the canvas.
+      d.dx += (W / 2 - d.x) * 0.02;
+      d.dy += (H / 2 - d.y) * 0.02;
+      var mag = Math.sqrt(d.dx * d.dx + d.dy * d.dy) || 0.01;
+      d.x += d.dx / mag * Math.min(mag, temp);
+      d.y += d.dy / mag * Math.min(mag, temp);
+    });
+  }
+  fitToBox(nodes, W, H);
+  unoverlap(nodes, W, H);
+  expandToFill(nodes, W, H);
+}
+
+// Half the width of a node's label box. The graph is unreadable if these collide,
+// so this is what the separation pass below actually keeps apart.
+function halfWidth(d) { return d.label.length * 2.95 + 7; }
+
+// Push apart any two nodes whose labels would overlap, along whichever axis needs
+// the smaller shove. Runs after the force layout and barely disturbs it.
+function unoverlap(nodes, W, H) {
+  var HALF_H = 17, padX = 70, padY = 22;
+  for (var pass = 0; pass < 300; pass++) {
+    var moved = false;
+    for (var i = 0; i < nodes.length; i++) {
+      for (var j = i + 1; j < nodes.length; j++) {
+        var a = nodes[i], b = nodes[j];
+        var dx = b.x - a.x, dy = b.y - a.y;
+        var needX = halfWidth(a) + halfWidth(b) - Math.abs(dx);
+        var needY = 2 * HALF_H - Math.abs(dy);
+        if (needX <= 0 || needY <= 0) continue;
+        moved = true;
+        if (needX < needY * 3) {
+          var sx = (dx < 0 ? -1 : 1) * needX / 2;
+          a.x -= sx; b.x += sx;
+        } else {
+          var sy = (dy < 0 ? -1 : 1) * needY / 2;
+          a.y -= sy; b.y += sy;
+        }
+      }
+    }
+    nodes.forEach(function (d) {  // keep everything inside the viewBox
+      d.x = Math.max(padX, Math.min(W - padX, d.x));
+      d.y = Math.max(padY, Math.min(H - padY - 20, d.y));
+    });
+    if (!moved) break;
+  }
+}
+
+// Rescale the finished layout into the viewBox, leaving room for the labels.
+function fitToBox(nodes, W, H) {
+  var padX = 95, padY = 34;
+  var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  nodes.forEach(function (d) {
+    minX = Math.min(minX, d.x - halfWidth(d)); maxX = Math.max(maxX, d.x + halfWidth(d));
+    minY = Math.min(minY, d.y); maxY = Math.max(maxY, d.y + 22);
+  });
+  var spanX = maxX - minX || 1, spanY = maxY - minY || 1;
+  var scale = Math.min((W - 2 * padX) / spanX, (H - 2 * padY) / spanY, 1);
+  var offX = (W - spanX * scale) / 2, offY = (H - spanY * scale) / 2;
+  nodes.forEach(function (d) {
+    d.x = offX + (d.x - minX) * scale;
+    d.y = offY + (d.y - minY) * scale;
+  });
+}
+
+// Scaling up can only increase the gaps unoverlap() just created, so this fills
+// the canvas without reintroducing any label collisions.
+function expandToFill(nodes, W, H) {
+  var padX = 60, padY = 26;
+  var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  nodes.forEach(function (d) {
+    minX = Math.min(minX, d.x - halfWidth(d)); maxX = Math.max(maxX, d.x + halfWidth(d));
+    minY = Math.min(minY, d.y - 8); maxY = Math.max(maxY, d.y + 24);
+  });
+  var scale = Math.min((W - 2 * padX) / (maxX - minX || 1),
+                       (H - 2 * padY) / (maxY - minY || 1));
+  if (scale <= 1) return;
+  var cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+  nodes.forEach(function (d) {
+    d.x = W / 2 + (d.x - cx) * scale;
+    d.y = H / 2 + (d.y - cy) * scale;
+  });
+}
+
+function drawGraph(graph) {
+  var svg = document.getElementById("graph"), W = 900, H = 540, byId = {};
+  layout(graph.nodes, graph.edges, W, H);
+  graph.nodes.forEach(function (d) { byId[d.id] = d; });
+
+  var defs = svgEl("defs");
+  var marker = svgEl("marker", { id: "arrow", viewBox: "0 0 10 10", refX: "10", refY: "5",
+    markerWidth: "9", markerHeight: "9", markerUnits: "userSpaceOnUse", orient: "auto" });
+  marker.appendChild(svgEl("path", { d: "M 0 1 L 10 5 L 0 9 z", fill: "#aaa" }));
+  defs.appendChild(marker);
+  svg.appendChild(defs);
+
+  graph.edges.forEach(function (e) {
+    var u = byId[e.a], v = byId[e.b];
+    if (!u || !v) return;
+    var cites = e.kind === "cites";
+    // Stop the line short of the target so the arrowhead does not sit on the circle.
+    var ex = v.x - u.x, ey = v.y - u.y;
+    var dist = Math.sqrt(ex * ex + ey * ey) || 1;
+    var attrs = {
+      x1: u.x + ex / dist * 8, y1: u.y + ey / dist * 8,
+      x2: v.x - ex / dist * 10, y2: v.y - ey / dist * 10,
+      stroke: cites ? "#aaa" : "#d8d8d8", "stroke-width": cites ? 1.2 : 1
+    };
+    if (cites) attrs["marker-end"] = "url(#arrow)";
+    else attrs["stroke-dasharray"] = "3,3";
+    svg.appendChild(svgEl("line", attrs));
+  });
+
+  graph.nodes.forEach(function (d) {
+    var presented = d.kind === "paper";
+    var anchor = svgEl("a", { href: d.url, target: "_blank", rel: "noopener" });
+    var tip = svgEl("title");
+    tip.textContent = d.title;
+    anchor.appendChild(tip);
+    anchor.appendChild(svgEl("circle", { cx: d.x, cy: d.y, r: presented ? 6 : 4.5,
+      fill: presented ? "#333" : "#fff", stroke: "#333", "stroke-width": 1.2 }));
+    // Push the label away from the middle, where the nodes are densest.
+    var label = svgEl("text", { x: d.x, y: d.y + 19, "text-anchor": "middle" });
+    label.textContent = d.label;
+    anchor.appendChild(label);
+    svg.appendChild(anchor);
+  });
+
+  document.getElementById("graph-box").hidden = false;
+}
+
+// Edges are committed in edges.json, regenerated by tools/build_graph.py.
+// Nothing is fetched from a third party when someone loads the page.
+fetch("edges.json")
+  .then(function (r) { return r.json(); })
+  .then(drawGraph)
+  .catch(function () { /* no graph is better than a broken one */ });
 
 fetch("papers.json")
   .then(function (r) { return r.json(); })

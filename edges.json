@@ -1,0 +1,195 @@
+{
+  "nodes": [
+    {
+      "id": "2306.10898",
+      "label": "B-cos Networks",
+      "title": "B-cos Alignment for Inherently Interpretable CNNs and Vision Transformers",
+      "url": "https://arxiv.org/abs/2306.10898",
+      "kind": "paper"
+    },
+    {
+      "id": "2306.12383",
+      "label": "Quadratic Bandits",
+      "title": "Sample Complexity for Quadratic Bandits: Hessian Dependent Bounds and Optimal Algorithms",
+      "url": "https://arxiv.org/abs/2306.12383",
+      "kind": "paper"
+    },
+    {
+      "id": "2308.16017",
+      "label": "Hidden-Role Games",
+      "title": "Hidden-Role Games: Equilibrium Concepts and Computation",
+      "url": "https://arxiv.org/abs/2308.16017v2",
+      "kind": "paper"
+    },
+    {
+      "id": "2402.03300",
+      "label": "DeepSeekMath (GRPO)",
+      "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+      "url": "https://arxiv.org/abs/2402.03300",
+      "kind": "reference"
+    },
+    {
+      "id": "2502.19002",
+      "label": "Sharpness Disparity",
+      "title": "The Sharpness Disparity Principle in Transformers for Accelerating Language Model Pre-Training",
+      "url": "https://arxiv.org/abs/2502.19002",
+      "kind": "paper"
+    },
+    {
+      "id": "2503.20783",
+      "label": "Dr. GRPO",
+      "title": "Understanding R1-Zero-Like Training: A Critical Perspective",
+      "url": "https://arxiv.org/abs/2503.20783",
+      "kind": "reference"
+    },
+    {
+      "id": "2504.13837",
+      "label": "RL Beyond Base Model",
+      "title": "Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?",
+      "url": "https://arxiv.org/abs/2504.13837",
+      "kind": "paper"
+    },
+    {
+      "id": "2505.17863",
+      "label": "Sparse Attention",
+      "title": "The emergence of sparse attention: impact of data distribution and benefits of repetition",
+      "url": "https://arxiv.org/abs/2505.17863",
+      "kind": "paper"
+    },
+    {
+      "id": "2506.14245",
+      "label": "RLVR Implicit Reasoning",
+      "title": "Reinforcement Learning with Verifiable Rewards Implicitly Incentivizes Correct Reasoning in Base LLMs",
+      "url": "https://arxiv.org/abs/2506.14245",
+      "kind": "paper"
+    },
+    {
+      "id": "2507.14805",
+      "label": "Subliminal Learning",
+      "title": "Subliminal Learning: Language models transmit behavioral traits via hidden signals in data",
+      "url": "https://arxiv.org/abs/2507.14805",
+      "kind": "paper"
+    },
+    {
+      "id": "2510.13651",
+      "label": "RL Reasoning Objective",
+      "title": "What is the objective of reasoning with reinforcement learning?",
+      "url": "https://arxiv.org/abs/2510.13651",
+      "kind": "paper"
+    },
+    {
+      "id": "2603.08371",
+      "label": "Leaderboard Incentives",
+      "title": "Leaderboard Incentives: Model Rankings under Strategic Post-Training",
+      "url": "https://arxiv.org/abs/2603.08371v1",
+      "kind": "paper"
+    },
+    {
+      "id": "2603.22117",
+      "label": "RLVR Update Direction",
+      "title": "On the Direction of RLVR Updates for LLM Reasoning: Identification and Exploitation",
+      "url": "https://arxiv.org/abs/2603.22117",
+      "kind": "paper"
+    }
+  ],
+  "edges": [
+    {
+      "a": "2603.22117",
+      "b": "2402.03300",
+      "kind": "cites"
+    },
+    {
+      "a": "2603.22117",
+      "b": "2503.20783",
+      "kind": "cites"
+    },
+    {
+      "a": "2603.22117",
+      "b": "2504.13837",
+      "kind": "cites"
+    },
+    {
+      "a": "2503.20783",
+      "b": "2402.03300",
+      "kind": "cites"
+    },
+    {
+      "a": "2506.14245",
+      "b": "2402.03300",
+      "kind": "cites"
+    },
+    {
+      "a": "2506.14245",
+      "b": "2503.20783",
+      "kind": "cites"
+    },
+    {
+      "a": "2506.14245",
+      "b": "2504.13837",
+      "kind": "cites"
+    },
+    {
+      "a": "2504.13837",
+      "b": "2402.03300",
+      "kind": "cites"
+    },
+    {
+      "a": "2504.13837",
+      "b": "2503.20783",
+      "kind": "cites"
+    },
+    {
+      "a": "2510.13651",
+      "b": "2402.03300",
+      "kind": "cites"
+    },
+    {
+      "a": "2603.22117",
+      "b": "2506.14245",
+      "kind": "shares",
+      "weight": 11
+    },
+    {
+      "a": "2603.22117",
+      "b": "2603.08371",
+      "kind": "shares",
+      "weight": 2
+    },
+    {
+      "a": "2402.03300",
+      "b": "2603.08371",
+      "kind": "shares",
+      "weight": 3
+    },
+    {
+      "a": "2506.14245",
+      "b": "2603.08371",
+      "kind": "shares",
+      "weight": 2
+    },
+    {
+      "a": "2306.10898",
+      "b": "2502.19002",
+      "kind": "shares",
+      "weight": 3
+    },
+    {
+      "a": "2306.10898",
+      "b": "2505.17863",
+      "kind": "shares",
+      "weight": 2
+    },
+    {
+      "a": "2504.13837",
+      "b": "2603.08371",
+      "kind": "shares",
+      "weight": 3
+    },
+    {
+      "a": "2502.19002",
+      "b": "2505.17863",
+      "kind": "shares",
+      "weight": 8
+    }
+  ]
+}

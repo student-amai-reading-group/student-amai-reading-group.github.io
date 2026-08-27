@@ -4,21 +4,24 @@
     "presenter": "Felix",
     "title": "Sample Complexity for Quadratic Bandits: Hessian Dependent Bounds and Optimal Algorithms",
     "authors": "Yu et al., 2023",
-    "url": "https://arxiv.org/abs/2306.12383"
+    "url": "https://arxiv.org/abs/2306.12383",
+    "short": "Quadratic Bandits"
   },
   {
     "date": "2026-07-27",
     "presenter": "Tobi",
     "title": "On the Direction of RLVR Updates for LLM Reasoning: Identification and Exploitation",
     "authors": "Huang et al., 2026",
-    "url": "https://arxiv.org/abs/2603.22117"
+    "url": "https://arxiv.org/abs/2603.22117",
+    "short": "RLVR Update Direction"
   },
   {
     "date": "2026-07-20",
     "presenter": "Yannick",
     "title": "Hidden-Role Games: Equilibrium Concepts and Computation",
     "authors": "Carminati et al., 2023",
-    "url": "https://arxiv.org/abs/2308.16017v2"
+    "url": "https://arxiv.org/abs/2308.16017v2",
+    "short": "Hidden-Role Games"
   },
   {
     "date": "2026-07-13",
@@ -29,13 +32,15 @@
         "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
         "authors": "Shao et al., 2024",
         "url": "https://arxiv.org/abs/2402.03300",
-        "note": "GRPO"
+        "note": "GRPO",
+        "short": "DeepSeekMath (GRPO)"
       },
       {
         "title": "Understanding R1-Zero-Like Training: A Critical Perspective",
         "authors": "Liu et al., 2025",
         "url": "https://arxiv.org/abs/2503.20783",
-        "note": "Dr. GRPO"
+        "note": "Dr. GRPO",
+        "short": "Dr. GRPO"
       }
     ]
   },
@@ -49,14 +54,16 @@
     "presenter": "Tobi",
     "title": "Reinforcement Learning with Verifiable Rewards Implicitly Incentivizes Correct Reasoning in Base LLMs",
     "authors": "Wen et al., 2025",
-    "url": "https://arxiv.org/abs/2506.14245"
+    "url": "https://arxiv.org/abs/2506.14245",
+    "short": "RLVR Implicit Reasoning"
   },
   {
     "date": "2026-05-31",
     "presenter": "Bennet",
     "title": "B-cos Alignment for Inherently Interpretable CNNs and Vision Transformers",
     "authors": "Böhle et al., 2023",
-    "url": "https://arxiv.org/abs/2306.10898"
+    "url": "https://arxiv.org/abs/2306.10898",
+    "short": "B-cos Networks"
   },
   {
     "date": "2026-05-24",
@@ -69,41 +76,47 @@
     "presenter": "Tobi",
     "title": "Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?",
     "authors": "Yue et al., 2025",
-    "url": "https://arxiv.org/abs/2504.13837"
+    "url": "https://arxiv.org/abs/2504.13837",
+    "short": "RL Beyond Base Model"
   },
   {
     "date": "2026-03-29",
     "presenter": "Philipp",
     "title": "Subliminal Learning: Language models transmit behavioral traits via hidden signals in data",
     "authors": "Cloud et al., 2025",
-    "url": "https://arxiv.org/abs/2507.14805"
+    "url": "https://arxiv.org/abs/2507.14805",
+    "short": "Subliminal Learning"
   },
   {
     "date": "2026-03-22",
     "presenter": "Felix",
     "title": "Leaderboard Incentives: Model Rankings under Strategic Post-Training",
     "authors": "Chen et al., 2026",
-    "url": "https://arxiv.org/abs/2603.08371v1"
+    "url": "https://arxiv.org/abs/2603.08371v1",
+    "short": "Leaderboard Incentives"
   },
   {
     "date": "2026-03-22",
     "presenter": "Ming-Xu",
     "title": "The Sharpness Disparity Principle in Transformers for Accelerating Language Model Pre-Training",
     "authors": "Wang et al., 2025",
-    "url": "https://arxiv.org/abs/2502.19002"
+    "url": "https://arxiv.org/abs/2502.19002",
+    "short": "Sharpness Disparity"
   },
   {
     "date": "2026-03-15",
     "presenter": "Ming-Xu",
     "title": "The emergence of sparse attention: impact of data distribution and benefits of repetition",
     "authors": "Zucchet et al., 2025",
-    "url": "https://arxiv.org/abs/2505.17863"
+    "url": "https://arxiv.org/abs/2505.17863",
+    "short": "Sparse Attention"
   },
   {
     "date": "2026-03-08",
     "presenter": "Tobi",
     "title": "What is the objective of reasoning with reinforcement learning?",
     "authors": "Davis & Recht, 2025",
-    "url": "https://arxiv.org/abs/2510.13651"
+    "url": "https://arxiv.org/abs/2510.13651",
+    "short": "RL Reasoning Objective"
   }
 ]
