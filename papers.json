@@ -54,7 +54,9 @@
   {
     "date": "2026-06-28",
     "presenter": "Felix",
-    "title": "Instance-Dependent Bandit Convex Optimization in One Dimension (thesis)"
+    "title": "Instance-Dependent Bandit Convex Optimization in One Dimension",
+    "authors": "Breuer et al., 2026",
+    "url": "https://neurips.cc/virtual/2026/loc/sydney/poster/153738"
   },
   {
     "date": "2026-06-14",
