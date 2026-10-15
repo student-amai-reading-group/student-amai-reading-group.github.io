@@ -1,5 +1,10 @@
 [
   {
+    "date": "2026-10-13",
+    "presenter": "Bennet",
+    "title": "Feature Visualization and Interpretability"
+  },
+  {
     "date": "2026-09-06",
     "presenter": "Basil",
     "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
