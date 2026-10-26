@@ -4,7 +4,7 @@
 Run this after adding a paper:  python3 tools/build_graph.py
 The site does not call the API at runtime - the edges are committed.
 """
-import json, re, sys, time, urllib.request
+import json, re, sys, time, urllib.error, urllib.request
 from itertools import combinations
 
 ARXIV = re.compile(r"arxiv\.org/abs/(\d+\.\d+)")
@@ -59,9 +59,18 @@ def citation_counts(aids):
     return {}
 
 def references_of(aid):
+    """arXiv ids this paper cites, retrying through rate limits."""
     url = ("https://api.semanticscholar.org/graph/v1/paper/arXiv:%s"
            "/references?fields=externalIds&limit=500" % aid)
-    data = json.load(urllib.request.urlopen(url, timeout=30))
+    for wait in [15, 45, 90, None]:
+        try:
+            data = json.load(urllib.request.urlopen(url, timeout=30))
+            break
+        except urllib.error.HTTPError as exc:
+            if exc.code != 429 or wait is None:
+                raise
+            print("%s: rate-limited, retrying in %ds" % (aid, wait), file=sys.stderr)
+            time.sleep(wait)
     out = set()
     for item in data.get("data", []):
         ext = (item.get("citedPaper") or {}).get("externalIds") or {}
@@ -88,15 +97,19 @@ def main():
         print("WARNING: no citation count for %s - they will render at minimum size"
               % ", ".join(missing), file=sys.stderr)
 
-    refs = {}
+    refs, failed = {}, []
     for aid in nodes:
         try:
             refs[aid] = references_of(aid)
             print("%s: %d refs" % (aid, len(refs[aid])), file=sys.stderr)
         except Exception as exc:
             print("%s: failed (%s)" % (aid, exc), file=sys.stderr)
-            refs[aid] = set()
+            failed.append(aid)
         time.sleep(1.2)  # unauthenticated rate limit
+    if failed:
+        # An empty reference list would silently drop that paper's edges.
+        sys.exit("no references for %s - edges.json left unchanged, try again later"
+                 % ", ".join(failed))
 
     edges, cited = [], set()
     for a in nodes:
