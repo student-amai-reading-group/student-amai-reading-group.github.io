@@ -1,5 +1,12 @@
 [
   {
+    "date": "2026-11-01",
+    "presenter": "Tobi",
+    "title": "Delightful Policy Gradient",
+    "authors": "Osband, 2026",
+    "url": "https://arxiv.org/abs/2603.14608"
+  },
+  {
     "date": "2026-10-13",
     "presenter": "Bennet",
     "title": "Feature Visualization and Interpretability"
