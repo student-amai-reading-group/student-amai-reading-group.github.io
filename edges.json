@@ -5,32 +5,32 @@
       "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
       "url": "https://arxiv.org/abs/2305.18290",
       "kind": "paper",
-      "citations": 10255,
-      "date": "2026-09-06"
+      "date": "2026-09-06",
+      "citations": 10255
     },
     {
       "id": "2306.10898",
       "title": "B-cos Alignment for Inherently Interpretable CNNs and Vision Transformers",
       "url": "https://arxiv.org/abs/2306.10898",
       "kind": "paper",
-      "citations": 49,
-      "date": "2026-05-31"
+      "date": "2026-05-31",
+      "citations": 49
     },
     {
       "id": "2306.12383",
       "title": "Sample Complexity for Quadratic Bandits: Hessian Dependent Bounds and Optimal Algorithms",
       "url": "https://arxiv.org/abs/2306.12383",
       "kind": "paper",
-      "citations": 3,
-      "date": "2026-08-23"
+      "date": "2026-08-23",
+      "citations": 3
     },
     {
       "id": "2308.16017",
       "title": "Hidden-Role Games: Equilibrium Concepts and Computation",
       "url": "https://arxiv.org/abs/2308.16017v2",
       "kind": "paper",
-      "citations": 13,
-      "date": "2026-07-20"
+      "date": "2026-07-20",
+      "citations": 13
     },
     {
       "id": "2402.03300",
@@ -44,8 +44,8 @@
       "title": "The Sharpness Disparity Principle in Transformers for Accelerating Language Model Pre-Training",
       "url": "https://arxiv.org/abs/2502.19002",
       "kind": "paper",
-      "citations": 26,
-      "date": "2026-03-22"
+      "date": "2026-03-22",
+      "citations": 26
     },
     {
       "id": "2503.20783",
@@ -59,59 +59,72 @@
       "title": "Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?",
       "url": "https://arxiv.org/abs/2504.13837",
       "kind": "paper",
-      "citations": 996,
-      "date": "2026-05-24"
+      "date": "2026-05-24",
+      "citations": 996
     },
     {
       "id": "2505.17863",
       "title": "The emergence of sparse attention: impact of data distribution and benefits of repetition",
       "url": "https://arxiv.org/abs/2505.17863",
       "kind": "paper",
-      "citations": 26,
-      "date": "2026-03-15"
+      "date": "2026-03-15",
+      "citations": 26
     },
     {
       "id": "2506.14245",
       "title": "Reinforcement Learning with Verifiable Rewards Implicitly Incentivizes Correct Reasoning in Base LLMs",
       "url": "https://arxiv.org/abs/2506.14245",
       "kind": "paper",
-      "citations": 252,
-      "date": "2026-06-14"
+      "date": "2026-06-14",
+      "citations": 252
     },
     {
       "id": "2507.14805",
       "title": "Subliminal Learning: Language models transmit behavioral traits via hidden signals in data",
       "url": "https://arxiv.org/abs/2507.14805",
       "kind": "paper",
-      "citations": 95,
-      "date": "2026-03-29"
+      "date": "2026-03-29",
+      "citations": 95
     },
     {
       "id": "2510.13651",
       "title": "What is the objective of reasoning with reinforcement learning?",
       "url": "https://arxiv.org/abs/2510.13651",
       "kind": "paper",
-      "citations": 16,
-      "date": "2026-03-08"
+      "date": "2026-03-08",
+      "citations": 16
     },
     {
       "id": "2603.08371",
       "title": "Leaderboard Incentives: Model Rankings under Strategic Post-Training",
       "url": "https://arxiv.org/abs/2603.08371v1",
       "kind": "paper",
-      "citations": 2,
-      "date": "2026-03-22"
+      "date": "2026-03-22",
+      "citations": 2
+    },
+    {
+      "id": "2603.14608",
+      "title": "Delightful Policy Gradient",
+      "url": "https://arxiv.org/abs/2603.14608",
+      "kind": "paper",
+      "date": "2026-11-15",
+      "citations": 0
     },
     {
       "id": "2603.22117",
       "title": "On the Direction of RLVR Updates for LLM Reasoning: Identification and Exploitation",
       "url": "https://arxiv.org/abs/2603.22117",
       "kind": "paper",
-      "citations": 12,
-      "date": "2026-07-27"
+      "date": "2026-07-27",
+      "citations": 12
     }
   ],
   "edges": [
+    {
+      "a": "2603.14608",
+      "b": "2402.03300",
+      "kind": "cites"
+    },
     {
       "a": "2603.22117",
       "b": "2402.03300",
@@ -176,6 +189,36 @@
       "a": "2510.13651",
       "b": "2402.03300",
       "kind": "cites"
+    },
+    {
+      "a": "2603.14608",
+      "b": "2305.18290",
+      "kind": "shares",
+      "weight": 3
+    },
+    {
+      "a": "2603.14608",
+      "b": "2603.22117",
+      "kind": "shares",
+      "weight": 3
+    },
+    {
+      "a": "2603.14608",
+      "b": "2503.20783",
+      "kind": "shares",
+      "weight": 3
+    },
+    {
+      "a": "2603.14608",
+      "b": "2506.14245",
+      "kind": "shares",
+      "weight": 3
+    },
+    {
+      "a": "2603.14608",
+      "b": "2504.13837",
+      "kind": "shares",
+      "weight": 3
     },
     {
       "a": "2305.18290",
